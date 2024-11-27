@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/deshanlankal/MERN-Stack-Project#readme",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "mongoose": "^8.8.3",
     "nodemon": "^3.1.7"
   }
 }
