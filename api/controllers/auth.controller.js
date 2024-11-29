@@ -1,6 +1,7 @@
 import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
+import logger from '../utils/logger.js';
 import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res, next) => {
@@ -9,6 +10,13 @@ export const signup = async (req, res, next) => {
   const newUser = new User({ username, email, password: hashedPassword });
   try {
     await newUser.save();
+    // Log user signup with username, email, and timestamp
+    logger.info({
+      message: 'New user signed up',
+      username: newUser.username,
+      email: newUser.email,
+      time: new Date().toISOString(),
+    });
     res.status(201).json('User created successfully!');
   } catch (error) {
     next(error);
@@ -24,6 +32,15 @@ export const signin = async (req, res, next) => {
     if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'));
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = validUser._doc;
+
+     // Log user login with username and timestamp
+     logger.info({
+      message: 'User logged in',
+      username: validUser.username,
+      email: validUser.email,
+      time: new Date().toISOString(),
+    });
+
     res
       .cookie('access_token', token, { httpOnly: true })
       .status(200)

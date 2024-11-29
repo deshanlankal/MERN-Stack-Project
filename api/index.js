@@ -5,16 +5,19 @@ import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import cookieParser from 'cookie-parser';
+import logger from './utils/logger.js'
 import path from 'path';
 
-
 dotenv.config();
+
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
+    logger.info('Connected to MongoDB!');
     console.log('Connected to MongoDB!');
   })
   .catch((err) => {
+    logger.error('MongoDB Connection Error:', err);
     console.log(err);
   });
 
@@ -23,6 +26,16 @@ mongoose
 const app = express();
 
 app.use(express.json());
+app.use((req, res, next) => {
+  logger.info({
+    message: 'Incoming Request',
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+  });
+  next();
+});
+
 
 app.use(cookieParser());
 
@@ -44,9 +57,19 @@ app.get('*', (req, res) => {
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
+   // Log the error
+   logger.error({
+    message: 'Unhandled Error',
+    statusCode,
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    stack: err.stack,
+  });
   return res.status(statusCode).json({
     success: false,
     statusCode,
     message,
   });
 });
+

@@ -4,6 +4,14 @@ import { errorHandler } from '../utils/error.js';
 export const createListing = async (req, res, next) => {
   try {
     const listing = await Listing.create(req.body);
+    // Log the listing creation
+    logger.info({
+      message: 'Listing created',
+      userRef: req.user.id, 
+      listingId: listing._id,
+      action: 'create',
+      time: new Date().toISOString(),
+    });
     return res.status(201).json(listing);
   } catch (error) {
     next(error);
@@ -22,6 +30,14 @@ export const deleteListing = async (req, res, next) => {
   }
 
   try {
+    // Log the listing deletion
+    logger.info({
+      message: 'Listing deleted',
+      userRef: req.user.id,
+      listingId: listing._id,
+      action: 'delete',
+      time: new Date().toISOString(),
+    });
     await Listing.findByIdAndDelete(req.params.id);
     res.status(200).json('Listing has been deleted!');
   } catch (error) {
@@ -44,6 +60,15 @@ export const updateListing = async (req, res, next) => {
       req.body,
       { new: true }
     );
+     // Log the listing update
+     logger.info({
+      message: 'Listing updated',
+      userRef: req.user.id,
+      listingId: updatedListing._id,
+      updatedFields: req.body,
+      action: 'update',
+      time: new Date().toISOString(),
+    });
     res.status(200).json(updatedListing);
   } catch (error) {
     next(error);
