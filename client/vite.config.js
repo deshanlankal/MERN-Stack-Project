@@ -1,10 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    outDir: 'public', // Vercel expects the output directory to be named `public`
-  },
   server: {
     proxy: {
       '/api': {
@@ -13,5 +11,6 @@ export default defineConfig({
       },
     },
   },
+
   plugins: [react()],
 });
