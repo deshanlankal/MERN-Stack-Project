@@ -31,6 +31,7 @@ export default function Profile() {
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
   const [capVal, setCapVal] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
   const dispatch = useDispatch();
 
   // firebase storage
@@ -71,12 +72,36 @@ export default function Profile() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
+    if (e.target.id === 'password') {
+      validatePassword(e.target.value);
+      
+    }
+  };
+
+  // Password validation function
+  const validatePassword = (password) => {
+    const lengthValid = password.length >= 6;
+    const containsNumber = /\d/.test(password);
+    const containsUppercase = /[A-Z]/.test(password);
+
+    if (!lengthValid || !containsNumber || !containsUppercase) {
+      setPasswordError(
+        'Password must be at least 6 characters long, contain numbers and uppercase letters.'
+      );
+      return false;
+    }
+    setPasswordError(null); // Clear error if valid
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!capVal) {
       alert('Please complete the reCAPTCHA');
+      return;
+    }
+    if (formData.password && !validatePassword(formData.password)) {
+      alert('Password is invalid. Please fix the errors.');
       return;
     }
     try {
@@ -220,6 +245,9 @@ export default function Profile() {
           id='password'
           className='border p-3 rounded-lg'
         />
+        {passwordError && (
+          <p className='text-red-700 text-sm mt-1'>{passwordError}</p>
+        )}
         {/* reCAPTCHA Component */}
         <ReCAPTCHA
           sitekey="6Le_YI0qAAAAAIdLI3MxiRpubEC5tCwzDfXWc0tf"
