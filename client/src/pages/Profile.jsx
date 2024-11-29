@@ -19,6 +19,14 @@ import {
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
+import DOMPurify from 'dompurify';
+
+const sanitizeUrl = (url) => {
+  const sanitizedUrl = DOMPurify.sanitize(url, { SAFE_FOR_TEMPLATES: true });
+  return sanitizedUrl.startsWith('http') || sanitizedUrl.startsWith('https')
+    ? sanitizedUrl
+    : '';
+};
 
 export default function Profile() {
   const fileRef = useRef(null);
@@ -301,7 +309,7 @@ export default function Profile() {
             >
               <Link to={`/listing/${listing._id}`}>
                 <img
-                  src={listing.imageUrls[0]}
+                  src={sanitizeUrl(listing.imageUrls[0])}
                   alt='listing cover'
                   className='h-16 w-16 object-contain'
                 />

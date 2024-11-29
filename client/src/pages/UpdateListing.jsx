@@ -8,6 +8,14 @@ import {
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import DOMPurify from 'dompurify';
+
+const sanitizeUrl = (url) => {
+  const sanitizedUrl = DOMPurify.sanitize(url, { SAFE_FOR_TEMPLATES: true });
+  return sanitizedUrl.startsWith('http') || sanitizedUrl.startsWith('https')
+    ? sanitizedUrl
+    : '';
+};
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -350,7 +358,7 @@ export default function CreateListing() {
             </button>
           </div>
           <p className='text-red-700 text-sm'>
-            {imageUploadError && imageUploadError}
+          {imageUploadError && <p className='text-red-700 text-sm'>{imageUploadError}</p>}
           </p>
           {formData.imageUrls.length > 0 &&
             formData.imageUrls.map((url, index) => (
@@ -359,7 +367,7 @@ export default function CreateListing() {
                 className='flex justify-between p-3 border items-center'
               >
                 <img
-                  src={url}
+                  src={safeUrl}
                   alt='listing image'
                   className='w-20 h-20 object-contain rounded-lg'
                 />
