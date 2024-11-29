@@ -335,7 +335,7 @@ export default function CreateListing() {
             </button>
           </div>
           <p className='text-red-700 text-sm'>
-            {imageUploadError && imageUploadError}
+            {imageUploadError}
           </p>
           {formData.imageUrls.length > 0 &&
             formData.imageUrls.map((url, index) => (
