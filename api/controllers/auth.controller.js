@@ -11,12 +11,10 @@ export const signup = async (req, res, next) => {
   try {
     await newUser.save();
     // Log user signup with username, email, and timestamp
-    logger.info({
-      message: 'New user signed up',
-      username: newUser.username,
-      email: newUser.email,
-      time: new Date().toISOString(),
-    });
+    logger.info(`New user signed up, username: ${username}, 
+      email: ${email}, 
+      time: ${new Date().toISOString()}`);
+      
     res.status(201).json('User created successfully!');
   } catch (error) {
     next(error);
@@ -34,12 +32,11 @@ export const signin = async (req, res, next) => {
     const { password: pass, ...rest } = validUser._doc;
 
      // Log user login with username and timestamp
-     logger.info({
-      message: 'User logged in',
-      username: validUser.username,
-      email: validUser.email,
-      time: new Date().toISOString(),
-    });
+     logger.info(
+      `User logged in, username: ${validUser.username}, 
+      email: ${validUser.email}, 
+      time: ${new Date().toISOString()}`
+    );
 
     res
       .cookie('access_token', token, { httpOnly: true })

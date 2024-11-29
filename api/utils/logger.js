@@ -1,7 +1,11 @@
 import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { MongoDB } from 'winston-mongodb';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __dirname = path.resolve(); // Get the current directory
 
@@ -21,7 +25,6 @@ const logger = createLogger({
     format.json()
   ),
   transports: [
-    // Console transport for immediate visibility during development
     new transports.Console({
       format: format.combine(
         format.colorize(),
@@ -31,30 +34,40 @@ const logger = createLogger({
         )
       ),
     }),
-    // File transport for general logs
     new transports.File({
       filename: path.join(logDir, 'application.log'),
       level: 'info',
     }),
-    // File transport for error logs
     new transports.File({
       filename: path.join(logDir, 'error.log'),
       level: 'error',
     }),
-    // Separate log file for user login events
     new transports.File({
       filename: path.join(logDir, 'user-login.log'),
       level: 'info',
     }),
-    // Separate log file for user sign up events
     new transports.File({
       filename: path.join(logDir, 'user-signup.log'),
       level: 'info',
     }),
-    // Separate log file for item creation (listing) events
     new transports.File({
       filename: path.join(logDir, 'item-creation.log'),
       level: 'info',
+    }),
+    new MongoDB({
+      db: process.env.MONGO,  
+      collection: 'logs', 
+      level: 'info', 
+      storeHost: true, 
+      capped: true, 
+      maxSize: 1000000, 
+    }),
+    new DailyRotateFile({
+      filename: path.join(logDir, 'application-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d',
     }),
   ],
   exceptionHandlers: [
@@ -63,15 +76,6 @@ const logger = createLogger({
   rejectionHandlers: [
     new transports.File({ filename: path.join(logDir, 'rejections.log') }),
   ],
-});
-
-// Daily rotate file transport for logs
-new DailyRotateFile({
-  filename: path.join(logDir, 'application-%DATE%.log'),
-  datePattern: 'YYYY-MM-DD',
-  zippedArchive: true,
-  maxSize: '20m',
-  maxFiles: '14d',
 });
 
 // Export the logger
