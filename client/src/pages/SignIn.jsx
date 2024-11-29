@@ -11,31 +11,18 @@ import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [isVerified, setIsVerified] = useState(false); // State to track reCAPTCHA status
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
     });
   };
-
-  const handleCaptchaChange = (token) => {
-    // Check if reCAPTCHA is completed and set verification state
-    setIsVerified(!!token);
-  };
-
+  const [capVal, setCapVal] = useState (null)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Ensure reCAPTCHA is completed before submission
-    if (!isVerified) {
-      alert('Please complete the reCAPTCHA');
-      return;
-    }
-
     try {
       dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
@@ -75,16 +62,15 @@ export default function SignIn() {
           id='password'
           onChange={handleChange}
         />
-
-         {/* Add reCAPTCHA */}
+        
         <ReCAPTCHA
-          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}  // Replace with your site key
-          onChange={handleCaptchaChange}
+        sitekey="6Le_YI0qAAAAAIdLI3MxiRpubEC5tCwzDfXWc0tf"
+        onChange={(value) => setCapVal(value)}
         />
 
         <button
-          disabled={loading || !isVerified} // Disable if loading or reCAPTCHA not completed
-          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          disabled={loading || !capVal}
+          className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
           {loading ? 'Loading...' : 'Sign In'}
         </button>

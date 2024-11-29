@@ -18,6 +18,8 @@ import {
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
+
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -28,6 +30,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+  const [capVal, setCapVal] = useState(null);
   const dispatch = useDispatch();
 
   // firebase storage
@@ -72,6 +75,10 @@ export default function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!capVal) {
+      alert('Please complete the reCAPTCHA');
+      return;
+    }
     try {
       dispatch(updateUserStart());
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -213,8 +220,13 @@ export default function Profile() {
           id='password'
           className='border p-3 rounded-lg'
         />
+        {/* reCAPTCHA Component */}
+        <ReCAPTCHA
+          sitekey="6Le_YI0qAAAAAIdLI3MxiRpubEC5tCwzDfXWc0tf"
+          onChange={(value) => setCapVal(value)} // Store the token
+        />
         <button
-          disabled={loading}
+          disabled={loading || !capVal}
           className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
         >
           {loading ? 'Loading...' : 'Update'}
