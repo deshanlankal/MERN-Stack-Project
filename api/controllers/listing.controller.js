@@ -1,10 +1,10 @@
 import Listing from '../models/listing.model.js';
 import { errorHandler } from '../utils/error.js';
+import logger from '../utils/logger.js';
 
 export const createListing = async (req, res, next) => {
   try {
     const listing = await Listing.create(req.body);
-    // Log the listing creation
     logger.info({
       message: 'Listing created',
       userRef: req.user.id, 
@@ -14,6 +14,7 @@ export const createListing = async (req, res, next) => {
     });
     return res.status(201).json(listing);
   } catch (error) {
+    next(errorHandler(700, ' This is comming from the createlisting in function check there 😒'));
     next(error);
   }
 };
@@ -60,15 +61,6 @@ export const updateListing = async (req, res, next) => {
       req.body,
       { new: true }
     );
-     // Log the listing update
-     logger.info({
-      message: 'Listing updated',
-      userRef: req.user.id,
-      listingId: updatedListing._id,
-      updatedFields: req.body,
-      action: 'update',
-      time: new Date().toISOString(),
-    });
     res.status(200).json(updatedListing);
   } catch (error) {
     next(error);

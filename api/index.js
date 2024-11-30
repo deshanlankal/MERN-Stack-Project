@@ -35,12 +35,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 
 app.use(express.static(path.join(__dirname, '/client/dist')));
-
-// Serve the error page for unknown routes
 app.get('*', (req, res) => {
   const statusCode = 404;
-
-  // Log the unknown route access to the custom log file
   logger.info({
     message: 'Unknown Route Accessed',
     statusCode,
@@ -66,7 +62,7 @@ app.get('*', (req, res) => {
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || 'Something Worong with your server check it😶‍🌫️🤦‍♂️';
   return res.status(statusCode).json({
     success: false,
     statusCode,

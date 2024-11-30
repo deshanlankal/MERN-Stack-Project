@@ -12,7 +12,7 @@ export const test = (req, res) => {
 
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
-    return next(errorHandler(401, 'You can only update your own account!'));
+    return next(errorHandler(401, 'You can only update your own account! What are you trying to do'));
   try {
     if (req.body.password) {
       req.body.password = bcryptjs.hashSync(req.body.password, 10);
@@ -30,39 +30,24 @@ export const updateUser = async (req, res, next) => {
       },
       { new: true }
     );
-    
-    // Log the user update action with details
-    logger.info({
-      message: 'User updated',
-      username: updatedUser.username,
-      email: updatedUser.email,
-      updatedFields: updatedUserDetails,
-      time: new Date().toISOString(),
-    });
-
     const { password, ...rest } = updatedUser._doc;
 
     res.status(200).json(rest);
   } catch (error) {
+    next(errorHandler(700, ' This is comming from the userUpdate in function check there 😒'));
     next(error);
   }
 };
 
 export const deleteUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
-    return next(errorHandler(401, 'You can only delete your own account!'));
-  try {
-    logger.info({
-      message: 'User deleted',
-      username: userToDelete.username,
-      email: userToDelete.email,
-      time: new Date().toISOString(),
-    });
-    
+    return next(errorHandler(401, 'You can only delete your own accounts! What are you duing'));
+  try {    
     await User.findByIdAndDelete(req.params.id);
     res.clearCookie('access_token');
     res.status(200).json('User has been deleted!');
   } catch (error) {
+    next(errorHandler(700, ' This is comming from the deleteUser in function check there 😒'));
     next(error);
   }
 };
@@ -91,6 +76,7 @@ export const getUser = async (req, res, next) => {
   
     res.status(200).json(rest);
   } catch (error) {
+    next(errorHandler(700, ' This is comming from the getUser in function check there 😒'));
     next(error);
   }
 };
