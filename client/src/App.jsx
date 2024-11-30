@@ -10,6 +10,7 @@ import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
 import Header from './components/Header';
 import PrivateRoute from './components/PrivateRoute';
+import NotFound from './error/NotFound';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             element={<UpdateListing />}
           />
         </Route>
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

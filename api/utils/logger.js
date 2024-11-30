@@ -4,8 +4,10 @@ import { MongoDB } from 'winston-mongodb';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import events from 'events';
 
 dotenv.config();
+events.defaultMaxListeners = 20;
 
 const __dirname = path.resolve(); // Get the current directory
 
@@ -15,9 +17,17 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
+// Transport for unknown routes logging
+const unknownRouteLogTransport = new DailyRotateFile({
+  filename: path.join(logDir, 'unknown-routes-%DATE%.log'), // Custom log file name pattern
+  datePattern: 'YYYY-MM-DD', // Log file rotation by day
+  maxSize: '20m', // Maximum file size before rotating
+  maxFiles: '14d', // Keep logs for 14 days
+});
+
 // Configure the logger
 const logger = createLogger({
-  level: 'info', // Default log level
+  level: 'info', // Default log level to info
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     format.errors({ stack: true }),
@@ -69,6 +79,7 @@ const logger = createLogger({
       maxSize: '20m',
       maxFiles: '14d',
     }),
+    unknownRouteLogTransport, // Custom transport for unknown routes
   ],
   exceptionHandlers: [
     new transports.File({ filename: path.join(logDir, 'exceptions.log') }),
@@ -78,5 +89,4 @@ const logger = createLogger({
   ],
 });
 
-// Export the logger
 export default logger;

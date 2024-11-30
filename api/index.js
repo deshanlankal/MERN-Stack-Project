@@ -5,7 +5,7 @@ import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import cookieParser from 'cookie-parser';
-import logger from './utils/logger.js'
+import logger from './utils/logger.js';
 import path from 'path';
 
 dotenv.config();
@@ -13,30 +13,17 @@ dotenv.config();
 mongoose
   .connect(process.env.MONGO)
   .then(() => {
-    logger.info('Connected to MongoDB!');
     console.log('Connected to MongoDB!');
   })
   .catch((err) => {
-    logger.error('MongoDB Connection Error:', err);
     console.log(err);
   });
 
-  const __dirname = path.resolve();
+const __dirname = path.resolve();
 
 const app = express();
 
 app.use(express.json());
-app.use((req, res, next) => {
-  logger.info({
-    message: 'Incoming Request',
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-  });
-  next();
-});
-
-
 app.use(cookieParser());
 
 app.listen(3000, () => {
@@ -47,29 +34,42 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 
-
 app.use(express.static(path.join(__dirname, '/client/dist')));
 
+// Serve the error page for unknown routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
-})
+  const statusCode = 404;
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-   // Log the error
-   logger.error({
-    message: 'Unhandled Error',
+  // Log the unknown route access to the custom log file
+  logger.info({
+    message: 'Unknown Route Accessed',
     statusCode,
     method: req.method,
     url: req.url,
     ip: req.ip,
-    stack: err.stack,
   });
+
+  if (process.env.NODE_ENV === 'development') {
+    logger.info({
+      message: 'Serving custom 404 error page',
+      statusCode,
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+    });
+
+    res.status(statusCode).sendFile(path.join(__dirname, 'client', 'src', 'errors', '404.html'));
+  } else {
+    res.status(statusCode).sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+  }
+});
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
   return res.status(statusCode).json({
     success: false,
     statusCode,
     message,
   });
 });
-

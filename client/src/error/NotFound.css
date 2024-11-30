@@ -1,0 +1,95 @@
+/* src/NotFound.css */
+.not-found-container {
+    text-align: center;
+    background: radial-gradient(circle, rgba(0, 255, 0, 0.5), rgba(0, 128, 0, 0.8)); /* Green gradient */
+    color: #ff0000; /* Bright red text */
+    padding: 50px;
+    font-family: 'Courier New', Courier, monospace; /* Monospace for danger vibe */
+    border: 5px solid #ff0000; /* Red border */
+    position: relative;
+    overflow: hidden; /* To contain explosion effects */
+}
+
+.not-found-title {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.meme-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cat-meme, .error-meme {
+    width: 300px; /* Fixed size for memes */
+    border: 5px solid #ff0000; /* Solid red border */
+    border-radius: 10px; /* Rounded corners */
+}
+
+/* Explosion Effect */
+.explosion {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 165, 0, 0.8); /* Orange color */
+    border-radius: 50%;
+    position: absolute;
+    animation: explode 1s forwards; /* Animation for explosion */
+}
+
+@keyframes explode {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* Animation Keyframes */
+@keyframes shake {
+    0% { transform: translate(0); }
+    25% { transform: translate(-5px, -5px); }
+    50% { transform: translate(5px, -5px); }
+    75% { transform: translate(-5px, 5px); }
+    100% { transform: translate(0); }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation Classes */
+.animate-title {
+    animation: shake 1s infinite; /* Shaking effect for danger */
+}
+
+.animate-memes {
+    animation: fadeIn 1s ease-in-out forwards;
+    animation-delay: 0.5s; /* Delay for memes */
+}
+
+.animate-message {
+    animation: fadeIn 1s ease-in-out forwards;
+    animation-delay: 1s; /* Delay for message */
+}
+
+.animate-warning {
+    color: #ffcc00; /* Yellow warning message */
+    animation: fadeIn 1s ease-in-out forwards;
+}
+/* src/NotFound.css */
+.explosion-image {
+    width: 100px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+    pointer-events: none; /* Prevent mouse events on the image */
+}
