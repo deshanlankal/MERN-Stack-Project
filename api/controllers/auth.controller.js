@@ -40,7 +40,7 @@ export const signin = async (req, res, next) => {
       .status(200)
       .json(rest);
   } catch (error) {
-    next(errorHandler(550, ' This is comming from the sign in function check there not the we dont giveout free info 😒'));
+    next(errorHandler(550, ' This is comming from the sign in function check there not hear we dont giveout free info 😒'));
     next(error);
   }
 };
