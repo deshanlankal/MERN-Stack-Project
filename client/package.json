@@ -14,7 +14,7 @@
     "@cloudinary/react": "^1.13.1",
     "@cloudinary/url-gen": "^1.21.0",
     "@reduxjs/toolkit": "^2.3.0",
-    "dompurify": "^3.2.2",
+    "dompurify": "^3.2.4",
     "dotenv": "^16.4.5",
     "firebase": "^11.0.2",
     "mern-stack-project": "file:..",
